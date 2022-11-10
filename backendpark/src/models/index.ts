@@ -8,3 +8,7 @@ export * from './tarjetacredito.model';
 export * from './ciudades.model';
 export * from './parques.model';
 export * from './atracciones.model';
+export * from './usuarios.model';
+export * from './visitantes.model';
+export * from './rol.model';
+export * from './credenciales.model';

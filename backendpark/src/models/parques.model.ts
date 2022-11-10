@@ -3,6 +3,7 @@ import {Zonas} from './zonas.model';
 import {Comida} from './comida.model';
 import {Planes} from './planes.model';
 import {Atracciones} from './atracciones.model';
+import {Visitantes} from './visitantes.model';
 
 @model()
 export class Parques extends Entity {
@@ -69,6 +70,19 @@ export class Parques extends Entity {
 
   @hasMany(() => Atracciones)
   atracciones: Atracciones[];
+
+  @property({
+    type: 'string',
+  })
+  usuariosId?: string;
+
+  @property({
+    type: 'string',
+  })
+  visitantesId?: string;
+
+  @hasMany(() => Visitantes)
+  visitantes: Visitantes[];
 
   constructor(data?: Partial<Parques>) {
     super(data);

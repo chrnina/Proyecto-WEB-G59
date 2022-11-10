@@ -8,3 +8,6 @@ export * from './planes.repository';
 export * from './tarjetacredito.repository';
 export * from './ventas.repository';
 export * from './zonas.repository';
+export * from './usuarios.repository';
+export * from './visitantes.repository';
+export * from './rol.repository';
