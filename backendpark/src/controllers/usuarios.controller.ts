@@ -1,3 +1,4 @@
+import { service } from '@loopback/core';
 import {
   Count,
   CountSchema,
@@ -16,14 +17,18 @@ import {
   del,
   requestBody,
   response,
+  HttpErrors,
 } from '@loopback/rest';
-import {Usuarios} from '../models';
-import {UsuariosRepository} from '../repositories';
+import {Credenciales, Rol, Usuarios} from '../models';
+import {RolRepository, UsuariosRepository} from '../repositories';
+import { AutenticacionService } from '../services';
 
 export class UsuariosController {
   constructor(
     @repository(UsuariosRepository)
     public usuariosRepository : UsuariosRepository,
+    @service (AutenticacionService)
+    public servicioAutenticacion: AutenticacionService,
   ) {}
 
   @post('/usuarios')
@@ -148,8 +153,10 @@ export class UsuariosController {
     await this.usuariosRepository.deleteById(id);
   }
   /**
-   * 
+   * Metodos Propios
    */
+  
+
    @get('/usuarios/{nombre}')
    @response(200, {
      description: 'Usuarios model instance',
@@ -169,5 +176,27 @@ export class UsuariosController {
       }
      });
      return usuario;
+   }
+   
+   @post('/user/login')
+   @response(200,{
+     description: "Login con Token de los usuarios"
+   })
+   async login(
+     @requestBody () credenciales: Credenciales
+   ){
+     let user= await this.servicioAutenticacion.IdentificarUsuario(credenciales)
+     if (user){
+       let token= this.servicioAutenticacion.GeneracionTokenUsuario(user);
+       return{
+         info:{
+           nombre: user.nombre,
+           rol: user.rols
+         },
+         tk: token
+       }
+     }else{
+      throw new HttpErrors[401]("Datos Invalidos")
+     }
    }
 }

@@ -42,9 +42,9 @@ export class Visitantes extends Entity {
 
   @property({
     type: 'string',
-    required: true,
+    required: false,
   })
-  clave: string;
+  clave?: string;
 
   @hasMany(() => Parques)
   parques: Parques[];
@@ -53,7 +53,7 @@ export class Visitantes extends Entity {
     type: 'string',
   })
   parquesId?: string;
-
+   
   constructor(data?: Partial<Visitantes>) {
     super(data);
   }
