@@ -49,7 +49,7 @@ export class AutenticacionService {
   IdentificarUsuario(credenciales:Credenciales){
     try {
       let u= this.repositorioUsuario.findOne({
-        where:{email:credenciales.usuario, clave:credenciales.password}
+        where:{email:credenciales.usuario, clave:credenciales.password}, include:['rols']
       });
       if (u){
         return u;

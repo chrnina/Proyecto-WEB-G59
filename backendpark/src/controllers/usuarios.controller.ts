@@ -19,9 +19,11 @@ import {
   response,
   HttpErrors,
 } from '@loopback/rest';
+import { Keys } from '../config/Keys';
 import {Credenciales, Rol, Usuarios} from '../models';
 import {RolRepository, UsuariosRepository} from '../repositories';
 import { AutenticacionService } from '../services';
+const fetchs= require("node-fetch");
 
 export class UsuariosController {
   constructor(
@@ -31,7 +33,7 @@ export class UsuariosController {
     public servicioAutenticacion: AutenticacionService,
   ) {}
 
-  @post('/usuarios')
+  @post('/registro')
   @response(200, {
     description: 'Usuarios model instance',
     content: {'application/json': {schema: getModelSchemaRef(Usuarios)}},
@@ -49,7 +51,23 @@ export class UsuariosController {
     })
     usuarios: Omit<Usuarios, 'id'>,
   ): Promise<Usuarios> {
-    return this.usuariosRepository.create(usuarios);
+    let clave= this.servicioAutenticacion.GenerarPassword();
+    let claveCifrada= this.servicioAutenticacion.EncriptarPassword(clave);
+    usuarios.clave= claveCifrada;
+    let u= await this.usuariosRepository.create(usuarios);
+    if(usuarios.nombre=="usuarios"){
+    }
+    
+  //Notificacion del usuario
+
+    let destino = u.email;
+    let asunto = "Registro en adventure park";
+    let mensaje = `Hola, ${u.nombre}, su usuario de accesso a adventure park es: ${u.email} y su contraseña es: ${clave}`
+
+    fetchs(`${Keys.urlNotificaciones}/e-mail?correo_destino=${destino}&asunto=${asunto}&contenido=${mensaje}`).then((data:any)=>{
+      console.log(data);
+    })
+    return u;
   }
 
   @get('/usuarios/count')
@@ -202,3 +220,7 @@ export class UsuariosController {
      }
    }
 }
+function fetch(arg0: string) {
+  throw new Error('Function not implemented.');
+}
+
