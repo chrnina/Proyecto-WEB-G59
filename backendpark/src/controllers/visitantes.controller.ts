@@ -21,7 +21,7 @@ import {
 } from '@loopback/rest';
 import { request } from 'http';
 import { Keys } from '../config/Keys';
-import {Credenciales , Visitantes} from '../models';
+import {Credenciales , Usuarios, Visitantes} from '../models';
 import {VisitantesRepository} from '../repositories';
 import { AutenticacionService } from '../services';
 import { UsuariosController } from './usuarios.controller';
@@ -57,6 +57,9 @@ export class VisitantesController {
     let claveCifrada= this.servicioAutenticacion.EncriptarPassword(clave);
     visitantes.clave= claveCifrada;
     let v= await this.visitantesRepository.create(visitantes);
+    if(visitantes.nombre=="visitantes"){
+      let p= await this.visitantesRepository.create(visitantes);
+    }
     
     //Notificacion del usuario
 

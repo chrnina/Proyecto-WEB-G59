@@ -2,7 +2,7 @@ import {injectable, /* inject, */ BindingScope} from '@loopback/core';
 import { repository } from '@loopback/repository';
 import { Keys } from '../config/Keys';
 import { Credenciales, Rol, Usuarios, Visitantes } from '../models';
-import { UsuariosRepository, VisitantesRepository } from '../repositories';
+import { RolRepository, UsuariosRepository, VisitantesRepository } from '../repositories';
 const generador=require("generate-password");
 const cryptojs=require("crypto-js");
 const JWT=require("jsonwebtoken");
@@ -13,7 +13,9 @@ export class AutenticacionService {
     @repository (VisitantesRepository)
     public repositorioVisitantes: VisitantesRepository,
     @repository (UsuariosRepository)
-    public repositorioUsuario: UsuariosRepository
+    public repositorioUsuario: UsuariosRepository,
+    @repository (RolRepository)
+    public repositorioRol: RolRepository
     ) {}
   
   /*
@@ -46,11 +48,11 @@ export class AutenticacionService {
   }
   IdentificarUsuario(credenciales:Credenciales){
     try {
-      let v= this.repositorioUsuario.findOne({
+      let u= this.repositorioUsuario.findOne({
         where:{email:credenciales.usuario, clave:credenciales.password}
       });
-      if (v){
-        return v;
+      if (u){
+        return u;
       }
       return false;
     } catch  {
@@ -82,6 +84,11 @@ export class AutenticacionService {
    * Generacion Token para usuario
    */
    GeneracionTokenUsuario(usuarios:Usuarios){
+    let r= this.repositorioRol.findOne({
+      where:{
+        usuariosId: usuarios.id
+      }
+    })
     let token = JWT.sign({
       data:{
         id: usuarios.id,

@@ -191,7 +191,9 @@ export class UsuariosController {
        return{
          info:{
            nombre: user.nombre,
-           rol: user.rols
+           apellido: user.apellido,
+           rol:{
+            id: user.rols}
          },
          tk: token
        }

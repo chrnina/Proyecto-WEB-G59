@@ -23,9 +23,9 @@ export class Atracciones extends Entity {
 
   @property({
     type: 'string',
-    required: true,
+    required: false,
   })
-  imagen: string;
+  imagen?: string;
 
   @property({
     type: 'number',
@@ -35,9 +35,9 @@ export class Atracciones extends Entity {
 
   @property({
     type: 'string',
-    required: true,
+    required: false,
   })
-  enlace: string;
+  enlace?: string;
 
   @property({
     type: 'string',
