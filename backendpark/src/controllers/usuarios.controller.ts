@@ -20,7 +20,7 @@ import {
   HttpErrors,
 } from '@loopback/rest';
 import { Keys } from '../config/Keys';
-import {Credenciales, Rol, Usuarios} from '../models';
+import {Cambiopassword, Credenciales, Rol, Usuarios} from '../models';
 import {RolRepository, UsuariosRepository} from '../repositories';
 import { AutenticacionService } from '../services';
 const fetchs= require("node-fetch");
@@ -219,8 +219,73 @@ export class UsuariosController {
       throw new HttpErrors[401]("Datos Invalidos")
      }
    }
+   @post('/recuperarpassword')
+   @response(200,{
+     description:"Recuperacion de contraseña"
+   })
+   async recuperarpassword(
+     @requestBody() email: string
+   
+   ): Promise<Boolean>{
+     let user= await this.usuariosRepository.findOne({
+      where: {
+        email: email
+      }
+     })
+     if (user) {
+      let clave=this.servicioAutenticacion.GenerarPassword();
+      let clavecifrada=this.servicioAutenticacion.EncriptarPassword(clave);
+      user.clave=clavecifrada;
+      await this.usuariosRepository.updateById(user.id,user);
+      /**Notificacion de nueva clave */
+      let destino = user.email;
+      let asunto = "Recuoperacion de contraseña Adbventure Park";
+      let mensaje = `Hola, ${user.nombre}, ustes ha solicitado la recuperacion de contraseña , la nueva contraseña es: ${clave}`
+
+      fetchs(`${Keys.urlNotificaciones}/e-mail?correo_destino=${destino}&asunto=${asunto}&contenido=${mensaje}`).then((data:any)=>{
+        console.log(data);
+      });
+      return true;
+
+     } else {
+      return false;
+     }
+   }
+
+   @post ('/cambiarpassword')
+   @response(200,{
+    description:"Asignar clave a Usuario"
+   })
+
+   async cambiar(
+    @requestBody () cambiar:Cambiopassword
+   ): Promise<Boolean>{
+    let passcifrado = this.servicioAutenticacion.EncriptarPassword(cambiar.actual);
+    let user = await this.usuariosRepository.findOne({
+      where:{
+        clave: passcifrado
+      }
+
+    });
+    if(user){
+      if(cambiar.nueva==cambiar.revalidar){
+        user.clave=this.servicioAutenticacion.EncriptarPassword(cambiar.nueva);
+        await this.usuariosRepository.updateById(user.id, user);
+        /** Implementacion de la notificacion  */
+        let destino = user.email;
+      let asunto = "Cambio de contraseña Adbventure Park";
+      let mensaje = `Hola, ${user.nombre}, ustes ha cambiado la contraseña , la nueva contraseña es: ${cambiar}`
+
+      fetchs(`${Keys.urlNotificaciones}/e-mail?correo_destino=${destino}&asunto=${asunto}&contenido=${mensaje}`).then((data:any)=>{
+        console.log(data);
+      });
+      return true;
+      }
+      console.log("No coincide las contraseñas")
+      return false;
+    }
+    return false;
+   }
 }
-function fetch(arg0: string) {
-  throw new Error('Function not implemented.');
-}
+
 

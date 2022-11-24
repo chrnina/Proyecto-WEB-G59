@@ -12,3 +12,4 @@ export * from './usuarios.model';
 export * from './visitantes.model';
 export * from './rol.model';
 export * from './credenciales.model';
+export * from './cambiopassword.model';
