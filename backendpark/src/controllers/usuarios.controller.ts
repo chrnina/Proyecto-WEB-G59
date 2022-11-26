@@ -274,7 +274,7 @@ export class UsuariosController {
         /** Implementacion de la notificacion  */
         let destino = user.email;
       let asunto = "Cambio de contraseña Adbventure Park";
-      let mensaje = `Hola, ${user.nombre}, ustes ha cambiado la contraseña , la nueva contraseña es: ${cambiar}`
+      let mensaje = `Hola, ${user.nombre}, ustes ha cambiado la contraseña , la nueva contraseña es: ${cambiar.nueva}`
 
       fetchs(`${Keys.urlNotificaciones}/e-mail?correo_destino=${destino}&asunto=${asunto}&contenido=${mensaje}`).then((data:any)=>{
         console.log(data);
